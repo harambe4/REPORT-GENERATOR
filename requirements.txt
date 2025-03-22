@@ -1,0 +1,5 @@
+anthropic
+pyyaml
+markdownify
+pdfplumber
+docx
