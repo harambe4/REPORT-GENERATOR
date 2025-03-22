@@ -16,32 +16,7 @@ def transcribe_audio(audio) -> str:
     return transcription.text
 
 
-def extract_text_from_docx(docx_path: str) -> str:
-    # Load Word document from file name
-    with open(docx_path, "rb") as f:
-        doc = Document(f)
-        paragraphs = [p.text for p in doc.paragraphs]
-        # Extract paragraphs
-        paragraphs = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
-
-        # Extract tables
-        tables_text = []
-        for table in doc.tables:
-            for row in table.rows:
-                row_text = " | ".join(cell.text.strip() for cell in row.cells)
-                tables_text.append(row_text)
-
-        tables_text = "\n".join(tables_text)
-
-    # Combine content
-    result_text = (
-        f"{paragraphs}\n\nTables:\n{tables_text}" if tables_text else paragraphs
-    )
-
-    return result_text
-
-
-def extract_text_from_docx_notes(docx: str) -> str:
+def extract_text_from_docx(docx) -> str:
     # Load Word document from file name
 
     doc = Document(docx)

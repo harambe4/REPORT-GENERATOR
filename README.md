@@ -7,7 +7,7 @@ This project is a report generator agent that uses the Anthropic Claude API to g
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/ib-dev/report-generator.git
+git clone https://github.com/harambe4/REPORT-GENERATOR.git
 ```
 
 2. Install the required dependencies:
@@ -23,7 +23,7 @@ pip install -r requirements.txt
 To run the web application, navigate to the `src` directory and execute the following command:
 
 ```bash
-streamlit run report_generator.py
+streamlit run src/report_generator.py
 ```
 
 ### Command-line Interface
