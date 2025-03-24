@@ -2,7 +2,7 @@ anthropic
 pyyaml
 markdownify
 pdfplumber
-python-docx==0.8.11
+python-docx
 streamlit
 yaml
 openai
