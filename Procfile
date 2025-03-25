@@ -1,1 +1,1 @@
-web: streamlit run src/report_generator.py
+web: streamlit run src/report_generator.py --server.port=$PORT --server.address=0.0.0.0
