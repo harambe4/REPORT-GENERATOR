@@ -19,20 +19,28 @@ def process_notes(notes):
     return input_notes
 
 
+def process_document(document):
+    if document.name.endswith(".docx"):
+        input_document = extract_text_from_docx(document)
+    elif document.name.endswith(".pdf"):
+        input_document = extract_text_from_pdf(document)
+    return input_document
+
+
 def main():
     st.title("Report Generator vDemo 1.0")
     st.write("Welcome to the report generator Demo!")
     notes = st.file_uploader(
         "## **Upload Notes in Word or Audio format**", type=["m4a", "wav", "docx"]
     )
-    reference = st.file_uploader("## **Upload References**", type=["pdf", "docx"])
+    reference = st.file_uploader("## **Upload References**", type=["pdf"])
     example = st.file_uploader("## **Upload Example**", type=["pdf", "docx"])
     if st.button("Generate Report") and notes and example:
         with st.spinner("Processing files..."):
             try:
                 input_notes = process_notes(notes)
                 reference_text = extract_text_from_pdf(reference)
-                example_text = extract_text_from_docx(example)
+                example_text = process_document(example)
             except Exception as e:
                 st.error(f"Error: {e}")
                 st.stop()
