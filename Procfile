@@ -1,0 +1,1 @@
+web: streamlit run src/report_generator.py
