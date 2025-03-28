@@ -100,3 +100,12 @@ uv.lock
 
 # Exclude LanceDB database
 lancedb/
+
+# Others
+notes/
+examples/
+references/
+reports/
+report_gpt_agent.py
+audio_comp.py
+api.py

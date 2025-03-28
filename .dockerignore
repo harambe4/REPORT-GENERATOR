@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+.idea/
+.vscode/
+.git/
+.gitignore
+*.log
+.DS_Store
+models/
+# Others
+notes/
+examples/
+references/
+reports/
+report_gpt_agent.py
+audio_comp.py
+api.py
