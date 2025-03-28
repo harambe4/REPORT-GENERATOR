@@ -3,6 +3,9 @@ import pdfplumber
 from docx import Document
 from openai import OpenAI
 import yaml
+import tempfile
+import subprocess
+import io
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -63,3 +66,72 @@ def fill_prompt_template(prompt_template, replacements):
         placeholder = f"{{{{{key}}}}}"  # Convert key to {{KEY}} format
         filled_prompt = filled_prompt.replace(placeholder, value)
     return filled_prompt
+
+
+def compress_audio_ffmpeg(uploaded_file):
+    """
+    Compress audio using FFmpeg with settings optimized for speech recognition.
+
+    Parameters:
+    - uploaded_file: Streamlit UploadedFile object
+
+    Returns:
+    - File-like object containing the compressed audio data
+    """
+    try:
+        # Create a temporary file for the input
+        input_ext = os.path.splitext(uploaded_file.name)[1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=input_ext) as input_tmp:
+            input_tmp.write(uploaded_file.getvalue())
+            input_path = input_tmp.name
+
+        # Create a path for the output file
+        output_path = tempfile.mktemp(suffix=".ogg")
+
+        # FFmpeg command to compress audio for voice
+        cmd = [
+            "ffmpeg",
+            "-i",
+            input_path,  # Input file
+            "-vn",  # No video
+            "-map_metadata",
+            "-1",  # Remove metadata
+            "-ac",
+            "1",  # Convert to mono
+            "-c:a",
+            "libopus",  # Use Opus codec
+            "-b:a",
+            "12k",  # 12kbps bitrate
+            "-application",
+            "voip",  # Optimize for voice
+            output_path,  # Output file
+        ]
+
+        # Run FFmpeg command
+        subprocess.run(cmd, check=True, capture_output=True)
+
+        # Clean up the input temporary file
+        os.unlink(input_path)
+
+        # Log file sizes
+        original_size = len(uploaded_file.getvalue()) / (1024 * 1024)
+        compressed_size = os.path.getsize(output_path) / (1024 * 1024)
+        print(
+            f"Original size: {original_size:.2f}MB, Compressed size: {compressed_size:.2f}MB"
+        )
+
+        # Read the compressed file into a BytesIO object
+        with open(output_path, "rb") as f:
+            compressed_file = io.BytesIO(f.read())
+
+        # Set the name of the file to match the original but with .ogg extension
+        original_name = os.path.splitext(uploaded_file.name)[0]
+        compressed_file.name = f"{original_name}.ogg"
+
+        # Clean up the output temporary file
+        os.unlink(output_path)
+
+        return compressed_file
+    except Exception as e:
+        print(f"Compression failed: {e}")
+        return None

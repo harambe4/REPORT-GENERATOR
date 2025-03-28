@@ -1,4 +1,6 @@
+import os
 import streamlit as st
+import debugpy
 import anthropic
 from utils import (
     transcribe_audio,
@@ -6,15 +8,31 @@ from utils import (
     extract_text_from_pdf,
     fill_prompt_template,
     extract_prompts,
+    compress_audio_ffmpeg,
 )
 
 client = anthropic.Anthropic()
+
+
+# Only initialize debugpy if DEBUG environment variable is set
+if os.environ.get("DEBUG") == "1" and not hasattr(debugpy, "_listen_called"):
+    debugpy.listen(("localhost", 5678))
+    debugpy._listen_called = True
+    print("Debugpy listening on port 5678")
 
 
 def process_notes(notes):
     if notes.name.endswith(".docx"):
         input_notes = extract_text_from_docx(notes)
     elif notes.name.endswith(".m4a"):
+        # Compress audio file using FFmpeg if its size is greater than 25MB
+        if notes.size > 25000000:
+            with st.spinner("Compressing audio..."):
+                try:
+                    notes = compress_audio_ffmpeg(notes)
+                except Exception as e:
+                    st.error(f"Error: {e}")
+                    st.stop()
         input_notes = transcribe_audio(notes)
     return input_notes
 
@@ -28,10 +46,11 @@ def process_document(document):
 
 
 def main():
-    st.title("Report Generator vDemo 1.0")
+    st.title("Report Generator vDemo 1.00")
     st.write("Welcome to the report generator Demo!")
     notes = st.file_uploader(
-        "## **Upload Notes in Word or Audio format**", type=["m4a", "wav", "docx"]
+        "## **Upload Notes in Word or Audio format**",
+        type=["m4a", "wav", "ogg", "docx"],
     )
     reference = st.file_uploader("## **Upload References**", type=["pdf"])
     example = st.file_uploader("## **Upload Example**", type=["pdf", "docx"])
