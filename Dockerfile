@@ -23,4 +23,4 @@ ENV PYTHONUNBUFFERED=1
 # Expose the port Streamlit will run on
 EXPOSE 8501
 
-CMD ["streamlit", "run", "src/report_generator.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD streamlit run src/report_generator.py --server.port=${PORT:-8501} --server.address=0.0.0.0
