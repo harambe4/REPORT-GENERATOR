@@ -11,7 +11,7 @@ import time
 current_path = os.path.dirname(os.path.abspath(__file__))
 
 
-def transcribe_audio(audio) -> str:
+def transcribe_audio(audio):
     # Transcribe audio file using OpenAI Whisper
     client = OpenAI()
     attempt = 0
@@ -24,15 +24,11 @@ def transcribe_audio(audio) -> str:
         except APIConnectionError as e:
             print(f"Attempt {attempt + 1} failed: {e}")
             attempt += 1
-            if attempt == 3:
-                print("Maximum number of attempts reached")
-                return None
-            else:
-                print("Retrying...")
+            if attempt < 3:
+                print("Retrying in 5 seconds...")
                 time.sleep(5)
 
-            return None
-
+    print("Maximum number of attempts reached. Transcription failed.")
     return None
 
 
