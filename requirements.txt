@@ -1,9 +1,7 @@
 anthropic
 PyYaml
-markdownify
 pdfplumber
 python-docx==1.1.2
 streamlit
 openai
 debugpy>=1.6.0
-pydub

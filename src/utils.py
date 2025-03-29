@@ -1,11 +1,12 @@
 import os
 import pdfplumber
 from docx import Document
-from openai import OpenAI
+from openai import OpenAI, APIConnectionError
 import yaml
 import tempfile
 import subprocess
 import io
+import time
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,10 +14,26 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 def transcribe_audio(audio) -> str:
     # Transcribe audio file using OpenAI Whisper
     client = OpenAI()
+    attempt = 0
+    while attempt < 3:
+        try:
+            transcription = client.audio.transcriptions.create(
+                model="whisper-1", file=audio
+            )
+            return transcription.text
+        except APIConnectionError as e:
+            print(f"Attempt {attempt + 1} failed: {e}")
+            attempt += 1
+            if attempt == 3:
+                print("Maximum number of attempts reached")
+                return None
+            else:
+                print("Retrying...")
+                time.sleep(5)
 
-    transcription = client.audio.transcriptions.create(model="whisper-1", file=audio)
+            return None
 
-    return transcription.text
+    return None
 
 
 def extract_text_from_docx(docx) -> str:

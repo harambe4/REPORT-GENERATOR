@@ -33,7 +33,12 @@ def process_notes(notes):
                 except Exception as e:
                     st.error(f"Error: {e}")
                     st.stop()
-        input_notes = transcribe_audio(notes)
+        try:
+            input_notes = transcribe_audio(notes)
+            st.success("Audio transcription successful!")
+        except Exception as e:
+            st.error(f"Error: {e}")
+            st.stop()
     return input_notes
 
 
@@ -46,7 +51,7 @@ def process_document(document):
 
 
 def main():
-    st.title("Report Generator vDemo 1.00")
+    st.title("Report Generator vDemo 1.01")
     st.write("Welcome to the report generator Demo!")
     notes = st.file_uploader(
         "## **Upload Notes in Word or Audio format**",
